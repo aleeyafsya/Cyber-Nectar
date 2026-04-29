@@ -1,0 +1,42 @@
+# Virtual Environments
+honeycomb-env/
+env/
+venv/
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Logs and databases
+*.log
+attack_logs.json
+hybrid_decisions*.json
+metrics_debug.json
+
+# Data files
+processed_data/
+*.npy
+*.pkl
+
+# Models
+# If you want to keep your pkl files, comment this out:
+# *.pkl
+
+# IDE / OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Flutter / Dart
+cyber_honeycomb_dashboard/build/
+cyber_honeycomb_dashboard/.dart_tool/
+cyber_honeycomb_dashboard/.flutter-plugins
+cyber_honeycomb_dashboard/.flutter-plugins-dependencies
+cyber_honeycomb_dashboard/.pub-cache/
+cyber_honeycomb_dashboard/.pub/
+cyber_honeycomb_dashboard/android/local.properties
+cyber_honeycomb_dashboard/ios/.symlinks/
+cyber_honeycomb_dashboard/ios/Pods/

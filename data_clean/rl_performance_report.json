@@ -1,0 +1,55 @@
+{
+  "evaluation_date": "2025-12-24T17:47:11.042741",
+  "data_summary": {
+    "training_samples": 16,
+    "collected_responses": 8,
+    "evaluation_period": {
+      "start": 1766584202.913627,
+      "end": 1766584242.02534
+    }
+  },
+  "basic_analysis": {
+    "total_responses": 8,
+    "threat_distribution": {
+      "MEDIUM": 4,
+      "HIGH": 3,
+      "LOW": 1
+    },
+    "status_distribution": {
+      "404": 4,
+      "403": 3,
+      "200": 1
+    },
+    "avg_response_time": 3.352875,
+    "analysis_date": "2025-12-24T17:47:11.042442"
+  },
+  "strategy_analysis": {
+    "total_strategies": 8,
+    "correct_strategies": 4,
+    "effectiveness": 50.0,
+    "by_category": {
+      "Normal": {
+        "total": 3,
+        "correct": 0
+      },
+      "Admin Scan": {
+        "total": 4,
+        "correct": 3
+      },
+      "CGI/Web Scan": {
+        "total": 1,
+        "correct": 1
+      }
+    }
+  },
+  "conclusions": [
+    "Analyzed 8 collected responses",
+    "Response strategy effectiveness: 50.0%",
+    "RL-enhanced honeypot is actively responding to attacks"
+  ],
+  "recommendations": [
+    "Collect more diverse attack data for better RL training",
+    "Monitor response times to ensure appropriate delays are applied",
+    "Regularly update RL model with new attack patterns"
+  ]
+}

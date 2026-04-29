@@ -1,0 +1,21 @@
+services:
+  backend:
+    build: .
+    container_name: cyberhoneycomb-backend
+    environment:
+      - PYTHONUNBUFFERED=1
+      - ESP32_IP=172.20.10.14 # esp32 IP
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app # Mount current dir for dynamic access or persistence
+    restart: unless-stopped
+
+  dashboard:
+    build: ./cyber_honeycomb_dashboard
+    container_name: cyberhoneycomb-dashboard
+    ports:
+      - "8081:80"
+    restart: unless-stopped
+    depends_on:
+      - backend
