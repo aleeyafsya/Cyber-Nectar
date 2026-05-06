@@ -4,7 +4,7 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
 import sys
 
-# --- CONFIGURATION ---
+# configuration
 SERIAL_PORT = 'COM3'  # the ESP32's COM port
 BAUD_RATE = 115200
 HTTP_PORT = 5000

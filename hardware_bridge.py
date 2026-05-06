@@ -5,7 +5,7 @@ import os
 class HardwareBridge:
     def __init__(self, enabled=True):
         self.enabled = enabled
-        # Default to localhost for Windows. Docker will override this via Env Var if needed.
+        # default to localhost for Windows. Docker will override this via Env Var if needed.
         self.relay_url = os.environ.get("RELAY_URL", "http://localhost:5000")
         
         if self.enabled:
@@ -42,7 +42,7 @@ class HardwareBridge:
     def close(self):
         pass
 
-# Example usage
+# example usage
 if __name__ == "__main__":
     # Test block
     bridge = HardwareBridge(enabled=True) 

@@ -1,7 +1,10 @@
 from flask import Flask, request, Response, jsonify, make_response
 from flask_cors import CORS
 from functools import wraps
-import os, requests, json, datetime, sys, time
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 sys.path.append('/app/data')
 
@@ -18,10 +21,10 @@ app = Flask(__name__)
 CORS(app) # CORS for flutter web
 ESP32_IP = os.environ.get('ESP32_IP', '192.168.1.100') # default fallback IP
 
-# security config 
-API_SECRET_KEY = "fyp_secret_2026" # API key
-VALID_USERNAME = "admin" # username
-VALID_PASSWORD = "fyp26" # password
+# security config (Loaded from .env)
+API_SECRET_KEY = os.environ.get("API_SECRET_KEY", "fallback_secret_key")
+VALID_USERNAME = os.environ.get("VALID_USERNAME", "admin")
+VALID_PASSWORD = os.environ.get("VALID_PASSWORD", "password123")
 
 @app.after_request
 def add_security_headers(response):

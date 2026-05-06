@@ -20,7 +20,7 @@ class UnifiedHoneypotEngine:
         print(f"Initialising Cyber Nectar (Mode: {mode})")
         
         # 1. 
-        # detection Layer (Unsupervised)
+        # detection layer (Unsupervised)
         self.detector = AnomalyHoneypot()
         
         # 2. 
@@ -29,7 +29,7 @@ class UnifiedHoneypotEngine:
         
         # 3. 
         # adaptation Layer (RL)
-        # We'll use the logic from RLEnhancedHoneypot but handle initialisation ourselves
+        # use the logic from RLEnhancedHoneypot but handle initialisation ourselves
         self.rl_agent = RLEnhancedHoneypot()
         
         # 4. 

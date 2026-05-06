@@ -16,7 +16,7 @@ def test_log_formatting():
         "path": "/test-path",
         "method": "GET"
     }
-    # This simulates how the engine sees an attack
+    # simulates how the engine sees an attack
     assert "source_ip" in sample_attack
     assert "path" in sample_attack
     assert sample_attack["path"] == "/test-path"
@@ -24,12 +24,12 @@ def test_log_formatting():
 def test_threat_classification_logic(engine):
     """FT-UT: Verify the 'Brain' correctly identifies threat levels"""
     
-    # 1. Test Critical Threat
+    # 1. test CRITICAL threat
     critical_attack = {"source_ip": "1.1.1.1", "path": "/etc/passwd", "method": "GET"}
     result = engine.process_attack(critical_attack)
     assert result["engine_metadata"]["threat_level"] == "CRITICAL"
     
-    # 2. Test Low Threat (Normal traffic)
+    # 2. test LOW threat (normal traffic)
     normal_attack = {"source_ip": "1.1.1.1", "path": "/index.html", "method": "GET"}
     result = engine.process_attack(normal_attack)
     assert result["engine_metadata"]["threat_level"] == "LOW"
@@ -37,11 +37,11 @@ def test_threat_classification_logic(engine):
 def test_alert_triggering_logic(engine):
     """FT-UT: Verify that high threats trigger the correct RL action"""
     
-    # Simulate a known dangerous path that should trigger a 'BLOCK' or 'ISOLATE' action
+    # simulate a known dangerous path that should trigger a 'BLOCK' or 'ISOLATE' action
     dangerous_attack = {"source_ip": "2.2.2.2", "path": "/admin/config.php", "method": "POST"}
     result = engine.process_attack(dangerous_attack)
     
-    # The RL agent should assign a high-protection action
+    # the RL agent should assign a high-protection action
     action = result["engine_metadata"]["rl_action"]
     assert action in ["BLOCK", "ISOLATE", "CHALLENGE"]
 
@@ -54,6 +54,5 @@ def test_deceptive_response_generation(engine):
     assert len(result["response_body"]) > 0
 
 if __name__ == "__main__":
-    # This allows you to run 'python test_backend.py' directly
     import pytest
     sys.exit(pytest.main([__file__]))

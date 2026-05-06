@@ -9,7 +9,7 @@ from collections import Counter
 
 class SimpleMLClassifier:
     def __init__(self):
-        self.attack_patterns = {}  # Learn from attacks
+        self.attack_patterns = {}  # learn from attacks
         
     def learn_from_attack(self, attack_data):
         """Simple frequency response learning"""
@@ -35,7 +35,7 @@ class AIMimicEngine:
         self.attack_patterns = self.load_attack_patterns()
         self.response_templates = self.load_response_templates()
         self.attack_history = []
-        self.ml_classifier = SimpleMLClassifier()  # Initialize ML classifier
+        self.ml_classifier = SimpleMLClassifier()  # initialise ML classifier
         
     def load_attack_patterns(self):
         """Define common IoT IP Camera attack patterns"""
@@ -71,7 +71,7 @@ class AIMimicEngine:
         """Define realistic IP Camera device responses with strategic delays"""
         return {
             'CRITICAL': {
-                'delay': 8,  # Maximum delay to waste attacker time
+                'delay': 8,  # the maximum delay to waste attacker time
                 'responses': [
                     "HTTP/1.0 401 Unauthorized\r\nWWW-Authenticate: Digest realm=\"Login to device\", qop=\"auth\"\r\n",
                     "<SOAP-ENV:Fault><faultcode>SOAP-ENV:Client</faultcode><faultstring>HTTP GET method not implemented</faultstring></SOAP-ENV:Fault>",
@@ -117,14 +117,14 @@ class AIMimicEngine:
         rule_score = threat_levels.get(rule_threat, 1)
         ml_score = threat_levels.get(ml_threat, 1)
         
-        # Take the higher (more conservative) threat level
+        # take the higher (more conservative) threat level
         final_score = max(rule_score, ml_score)
         
-        # Convert score back to threat level
+        # convert score back to threat level
         for threat, score in threat_levels.items():
             if final_score == score:
                 return threat
-        return 'MEDIUM'  # Default fallback
+        return 'MEDIUM'  # default fallback
     
     def analyze_attack(self, attack_data):
         """Analyze the attack using both rule-based and ML approaches"""
@@ -133,7 +133,7 @@ class AIMimicEngine:
         method = attack_data.get('method', '')
         data = attack_data.get('data', '')
         
-        # Combine all text for pattern matching
+        # combine all text for pattern matching
         full_text = f"{path} {user_agent} {data}".lower()
         
         # Default response
@@ -157,7 +157,7 @@ class AIMimicEngine:
                     re.search(regex_pattern, user_agent, re.IGNORECASE) or
                     re.search(regex_pattern, str(data), re.IGNORECASE)):
                     
-                    confidence = len(regex_pattern) / 10  # Simple confidence scoring
+                    confidence = len(regex_pattern) / 10  # simple confidence scoring
                     if confidence > max_confidence:
                         max_confidence = confidence
                         rule_threat = pattern_data['threat_level']
@@ -181,18 +181,18 @@ class AIMimicEngine:
         # ML LEARNS FROM THIS ATTACK
         self.ml_classifier.learn_from_attack(attack_data)
         
-        # Add delay based on FINAL threat level
+        # add delay based on FINAL threat level
         response_template = self.response_templates[response['threat_level']]
         response['delay'] = response_template['delay']
         
-        # Store in history for learning
+        # store in history for learning
         self.attack_history.append({
             'timestamp': datetime.now().isoformat(),
             'response': response,
             'attack_data': attack_data
         })
         
-        # Keep only recent history
+        # keep only recent history
         if len(self.attack_history) > 50:
             self.attack_history = self.attack_history[-50:]
             
@@ -202,15 +202,15 @@ class AIMimicEngine:
         """Generate a deceptive response with strategic delays"""
         template = self.response_templates[threat_level]
         
-        # Strategic delays based on threat level
+        # strategic delays based on threat level
         delay_msg = f"AI: Delaying response by {template['delay']}s to waste attacker time..."
         print(delay_msg)
         time.sleep(template['delay'])
         
-        # Choose deceptive response
+        # choose deceptive response
         deceptive_response = random.choice(template['responses'])
         
-        # Enhanced logging
+        # enhanced logging
         mimic_msg = f"AI: Sending deceptive response: '{deceptive_response}'"
         print(mimic_msg)
         
@@ -253,17 +253,17 @@ class AIMimicEngine:
             "ml_learned_patterns": len(self.ml_classifier.attack_patterns)
         }
 
-# Test the enhanced AI engine
+# test the enhanced AI engine
 if __name__ == '__main__':
     ai = AIMimicEngine()
     
-    # Pre-train ML with some repeated attacks
+    # pre-train ML with some repeated attacks
     print("Pre-training ML classifier with sample attacks...")
     training_paths = ['/admin', '/admin', '/admin', '/test', '/test', '/cgi-bin', '/login']
     for path in training_paths:
         ai.ml_classifier.learn_from_attack({'path': path})
     
-    # Test cases
+    # test cases
     test_attacks = [
         {'path': '/', 'user_agent': 'curl/7.68.0', 'method': 'GET', 'data': ''},
         {'path': '/admin', 'user_agent': 'nmap scanner', 'method': 'GET', 'data': ''},
@@ -303,7 +303,7 @@ if __name__ == '__main__':
     print(f"   ML Learned Patterns: {stats['ml_learned_patterns']}")
     print("=" * 70)
     
-    # Show ML's learned patterns
+    # show ML's learned patterns
     print("\nML CLASSIFIER LEARNED PATTERNS:")
     for path, count in ai.ml_classifier.attack_patterns.items():
         print(f"   {path:<30} -> Seen {count} times")

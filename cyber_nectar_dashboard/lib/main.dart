@@ -13,6 +13,9 @@ const Color bgColor = Color(0xFF011E31);
 const Color primaryColor = Color(0xFFF69813);
 const Color headerColor = Color(0xFFE8E8E8);
 
+// CONFIGURATION - Change this for your environment
+const String apiBaseUrl = 'https://zips-twitch-puppy.ngrok-free.dev';
+
 class CyberNectarApp extends StatelessWidget {
   const CyberNectarApp({super.key});
 
@@ -61,7 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       final response = await http.post(
-        Uri.parse('https://zips-twitch-puppy.ngrok-free.dev/api/login'),
+        Uri.parse('$apiBaseUrl/api/login'),
         headers: {
           'Content-Type': 'application/json',
           'ngrok-skip-browser-warning': 'true',
@@ -271,7 +274,7 @@ class _MainDashboardState extends State<MainDashboard> {
   Future<void> fetchRealData() async {
     try {
       final response = await http.get(
-        Uri.parse('https://zips-twitch-puppy.ngrok-free.dev/api/metrics'),
+        Uri.parse('$apiBaseUrl/api/metrics'),
         headers: {
           'X-API-Key': widget.apiKey,
           'ngrok-skip-browser-warning': 'true',
@@ -784,7 +787,7 @@ class _AttackLogPageState extends State<AttackLogPage> {
   Future<void> fetchAttacks() async {
     try {
       final response = await http.get(
-        Uri.parse('https://zips-twitch-puppy.ngrok-free.dev/api/live_attacks'),
+        Uri.parse('$apiBaseUrl/api/live_attacks'),
         headers: {
           'X-API-Key': widget.apiKey,
           'ngrok-skip-browser-warning': 'true',

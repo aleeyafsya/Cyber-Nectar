@@ -20,7 +20,7 @@ class QLearningTrainer:
         return f"{threat_level}_{engagement}_{suspicious}_{container_name}"
     
     def initialize_q_table(self):
-        """Initialize Q-table with all possible states"""
+        """Initialise Q-table with all possible states"""
         threat_levels = ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
         engagements = ["NEW", "LOW_ENG", "HIGH_ENG"]
         suspicious_flags = ["CLEAN", "SUSP"]

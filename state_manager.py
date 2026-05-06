@@ -84,7 +84,7 @@ class StateManager:
         # Return next state
         return self.get_state(attack_data)
 
-# Test the state manager
+# test the state manager
 if __name__ == "__main__":
     print("Testing State Manager")
     print("="*60)
