@@ -75,8 +75,10 @@ class UnifiedHoneypotEngine:
         if anomaly_score == -1:
             if any(x in path for x in ["passwd", "bin/sh", "onvif"]):
                 threat_level = "CRITICAL"
-            elif any(x in path for x in ["cgi-bin", ".php", ".aspx", "admin"]):
+            elif any(x in path for x in ["cgi-bin", ".aspx", "sql", "exploit"]):
                 threat_level = "HIGH"
+            elif any(x in path for x in ["admin", ".php", "login", "setup"]):
+                threat_level = "MEDIUM"
             else:
                 threat_level = "MEDIUM"
         else:

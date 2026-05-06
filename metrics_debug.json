@@ -1,1 +1,0 @@
-{"agent_accuracy":91.84975194897235,"avg_delay":3.10347271438696,"last_attack_time":"2026-04-07T15:52:54.972058","last_threat_level":"LOW","protocol_distribution":{"Normal Traffic":2,"ONVIF Protocol Scan":1,"Unknown Protocol":1408},"threat_distribution":{"CRITICAL":73,"HIGH":195,"LOW":432,"MEDIUM":711},"total_attacks":1411}

@@ -10,7 +10,7 @@ BAUD_RATE = 115200
 HTTP_PORT = 5000
 
 print("="*50)
-print("  CYBER HONEYCOMB - HARDWARE RELAY BRIDGE")
+print("  CYBER NECTAR - HARDWARE RELAY BRIDGE")
 print("="*50)
 
 # intialise serial Connection

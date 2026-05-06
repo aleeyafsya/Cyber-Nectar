@@ -38,20 +38,32 @@ def train():
     model.fit(X_train)
 
     # 3. 
-    # evaluate the model
-    print("Evaluating model...")
-    y_pred = model.predict(X_test)
+    # evaluate the model on a BALANCED subset for a fair report
+    print("Evaluating model on balanced subset...")
     
-    # Isolation Forest labels: 1 = normal, -1 = anomaly
-    # y_test labels: 1 = Benign, -1 = Malicious
+    # separate normal and anomaly indices
+    normal_idx = np.where(y_test == 1)[0]
+    anomaly_idx = np.where(y_test == -1)[0]
     
-    print("\nModel Evaluation Report:")
+    # take an equal number from both (limited by the smaller class)
+    n_samples = min(len(normal_idx), len(anomaly_idx))
+    balanced_idx = np.concatenate([
+        np.random.choice(normal_idx, n_samples, replace=False),
+        np.random.choice(anomaly_idx, n_samples, replace=False)
+    ])
+    
+    X_test_balanced = X_test[balanced_idx]
+    y_test_balanced = y_test[balanced_idx]
+    
+    y_pred = model.predict(X_test_balanced)
+    
+    print("\nBalanced Model Evaluation Report (50/50 Split):")
     print("=" * 60)
-    print(classification_report(y_test, y_pred, target_names=['Anomaly', 'Normal']))
+    print(classification_report(y_test_balanced, y_pred, target_names=['Anomaly', 'Normal']))
     print("=" * 60)
     
-    print("\nConfusion Matrix:")
-    print(confusion_matrix(y_test, y_pred))
+    print("\nConfusion Matrix (Balanced):")
+    print(confusion_matrix(y_test_balanced, y_pred))
 
     # 4. 
     # save the model

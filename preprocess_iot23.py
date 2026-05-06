@@ -10,7 +10,7 @@ OUTPUT_DIR = "processed_data"
 MODELS_DIR = "models"
 
 def preprocess():
-    print("Loading dataset (this might take a while due to file size)...")
+    print("Loading dataset")
 
     cols_to_use = [
         'id.orig_p', 'id.resp_p', 'duration', 'orig_bytes', 'resp_bytes', 

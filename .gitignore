@@ -1,4 +1,5 @@
 # Virtual Environments
+nectar-env/
 honeycomb-env/
 env/
 venv/
@@ -15,14 +16,23 @@ attack_logs.json
 hybrid_decisions*.json
 metrics_debug.json
 
-# Data files
+# Data and Results
 processed_data/
 *.npy
-*.pkl
+*.png
+*.jpg
+
+# Specific Audit/One-off Scripts (Keep local)
+visual_ml_audit.py
+audit_ai_performance.py
+generate_poster_graphs.py
+mass_verification.py
+verify_hybrid_system.py
+attack_sim.py
 
 # Models
-# If you want to keep your pkl files, comment this out:
-# *.pkl
+# models/
+# final_correct_agent.pkl
 
 # IDE / OS files
 .vscode/

@@ -32,10 +32,12 @@ class HardwareBridge:
 
         try:
             params = {"level": threat_level}
-            requests.get(f"{self.relay_url}/alert", params=params, timeout=1.5)
+            target = f"{self.relay_url}/alert"
+            print(f"DEBUG: HardwareBridge sending {threat_level} to {target}")
+            requests.get(target, params=params, timeout=1.5)
             print(f"Sent {threat_level} alert signal to Host Relay.")
         except Exception as e:
-            print(f"Failed to reach Host Relay: {e}")
+            print(f"Failed to reach Host Relay at {self.relay_url}: {e}")
 
     def close(self):
         pass

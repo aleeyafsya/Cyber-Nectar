@@ -1,10 +1,15 @@
+name: cyber-nectar-demo
+
 services:
   backend:
     build: .
-    container_name: cyberhoneycomb-backend
+    container_name: cybernectar-backend
     environment:
       - PYTHONUNBUFFERED=1
       - ESP32_IP=172.20.10.14 # esp32 IP
+      - RELAY_URL=http://host.docker.internal:5000
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
       - "8080:8080"
     volumes:
@@ -12,8 +17,8 @@ services:
     restart: unless-stopped
 
   dashboard:
-    build: ./cyber_honeycomb_dashboard
-    container_name: cyberhoneycomb-dashboard
+    build: ./cyber_nectar_dashboard
+    container_name: cybernectar-dashboard
     ports:
       - "8081:80"
     restart: unless-stopped
