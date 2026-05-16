@@ -29,6 +29,8 @@ generate_poster_graphs.py
 mass_verification.py
 verify_hybrid_system.py
 attack_sim.py
+ml_evaluation.ipynb
+ml_evaluation.html
 
 # Models
 # models/

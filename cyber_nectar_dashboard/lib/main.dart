@@ -249,6 +249,7 @@ class MainDashboard extends StatefulWidget {
 class _MainDashboardState extends State<MainDashboard> {
   int totalThreats = 0;
   double agentAccuracy = 0;
+  double realF1Score = 0;
   double averageDelay = 0;
   String lastThreat = 'LOW';
   Map<String, int> threatDist = {'LOW': 0, 'MEDIUM': 0, 'HIGH': 0, 'CRITICAL': 0};
@@ -285,6 +286,7 @@ class _MainDashboardState extends State<MainDashboard> {
         setState(() {
           totalThreats = data['total_attacks'] ?? 0;
           agentAccuracy = (data['agent_accuracy'] ?? 0).toDouble();
+          realF1Score = (data['f1_score'] ?? 0).toDouble();
           averageDelay = (data['avg_delay'] ?? 0).toDouble();
           lastThreat = data['last_threat_level'] ?? 'LOW';
           
@@ -336,8 +338,8 @@ class _MainDashboardState extends State<MainDashboard> {
                   title: 'AI Agent Performance',
                   leftLabel: 'Overall Accuracy',
                   leftValue: '${agentAccuracy.toStringAsFixed(1)}%',
-                  rightLabel: 'Est. F1-Score',
-                  rightValue: '${(agentAccuracy * 0.96).toStringAsFixed(1)}%', // Simulated F1 for dashboard display
+                  rightLabel: 'Real F1-Score',
+                  rightValue: '${realF1Score.toStringAsFixed(1)}%', // Uses the exact mathematical F1-Score calculated by the honeypot backend
                 )),
               ],
             ),
@@ -862,8 +864,8 @@ class _AttackLogPageState extends State<AttackLogPage> {
                   pw.Column(
                     crossAxisAlignment: pw.CrossAxisAlignment.start,
                     children: [
-                      _pdfSummaryItem('F1-Score:', '${((metrics['agent_accuracy'] ?? 0) * 0.96).toStringAsFixed(1)}%'),
-                      _pdfSummaryItem('Avg Resp Delay:', '${(metrics['avg_delay'] ?? 0).toStringAsFixed(1)}s'),
+                      _pdfSummaryItem('Real F1-Score:', '${(metrics['f1_score'] ?? 0).toStringAsFixed(1)}%'),
+                      _pdfSummaryItem('Last Threat:', '${metrics['last_threat_level'] ?? 'N/A'}'),
                     ],
                   ),
                 ],

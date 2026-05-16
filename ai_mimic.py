@@ -274,7 +274,7 @@ if __name__ == '__main__':
     ]
     
     print("\n" + "=" * 70)
-    print("ENHANCED AI MIMIC ENGINE TEST RESULTS (RULE + ML HYBRID)")
+    print("ENHANCED AI MIMIC ENGINE TEST RESULTS (RULE + ML)")
     print("=" * 70)
     
     for i, attack in enumerate(test_attacks, 1):

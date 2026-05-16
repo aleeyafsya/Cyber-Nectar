@@ -35,14 +35,31 @@ class RLEnhancedHoneypot:
 
     def load_rl_model(self):
         """Load pre-trained Q-table or create default"""
+        # Try multiple paths (Docker vs Local)
+        possible_paths = [
+            "final_correct_agent.pkl",
+            "models/final_correct_agent.pkl",
+            "/app/data/rl_models/final_correct_agent.pkl",
+            "../final_correct_agent.pkl"
+        ]
+        
+        model_path = None
+        for p in possible_paths:
+            if os.path.exists(p):
+                model_path = p
+                break
+
         try:
-            with open("/app/data/rl_models/final_correct_agent.pkl", "rb") as f:
+            if not model_path:
+                raise FileNotFoundError("No RL model file found in any expected location.")
+
+            with open(model_path, "rb") as f:
                 model = pickle.load(f)
             
             q = defaultdict(lambda: np.zeros(4))
             q.update({k: np.array(v) for k, v in model["q_table"].items()})
             
-            print(f"✅ Loaded pre-trained model with {len(q)} states")
+            print(f"✅ Loaded pre-trained model ({model_path}) with {len(q)} states")
             return q
             
         except Exception as e:

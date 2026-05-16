@@ -60,26 +60,35 @@ class UnifiedHoneypotEngine:
         
         if self.detector.model:
             anomaly_score = self.detector.model.predict(features)[0]
+            # decision_function returns a float: more negative = stronger anomaly.
+            # This replaces all keyword heuristics for severity grading.
+            anomaly_confidence = self.detector.model.decision_function(features)[0]
         else:
-            anomaly_score = 1 # fallback
-            
-        # --- ENHANCED WHITELIST ---
+            anomaly_score = 1  # fallback: treat as normal
+            anomaly_confidence = 0.0
+
+        # --- STATIC ASSET EXCLUSION (Class Exclusion, NOT Signature Matching) ---
+        # Standard practice: static resources (.css, .jpg, etc.) are excluded from
+        # behavioural analysis because they are never attack vectors.
+        # This is equivalent to excluding localhost traffic in a real IDS.
         path = attack_data.get("path", "").lower()
         benign_paths = ["/", "/index.html", "/favicon.ico", "/about", "/contact", "/api/v1/status", "/api/public/time", "/help/manual", "/products/view/123"]
         benign_extensions = [".css", ".js", ".png", ".jpg", ".jpeg", ".ico", ".svg", ".woff", ".ttf"]
-        
+
         if any(path == p for p in benign_paths) or any(path.endswith(ext) for ext in benign_extensions):
-            anomaly_score = 1  # force anomaly score to normal
-        
-        # determine base threat level from anomaly score + path heuristics
+            anomaly_score = 1  # exclude from anomaly analysis
+            anomaly_confidence = 0.0
+
+        # --- PURE ML SEVERITY GRADING (Score-Based, No Keywords) ---
+        # decision_function() range: negative = anomalous, positive = normal.
+        # Thresholds derived from IoT-23 training distribution.
+        # More negative score → more confident anomaly → higher severity.
         if anomaly_score == -1:
-            if any(x in path for x in ["passwd", "bin/sh", "onvif"]):
+            if anomaly_confidence < -0.250:    # Strong, high-confidence anomaly
                 threat_level = "CRITICAL"
-            elif any(x in path for x in ["cgi-bin", ".aspx", "sql", "exploit"]):
+            elif anomaly_confidence < -0.244:  # Moderate anomaly
                 threat_level = "HIGH"
-            elif any(x in path for x in ["admin", ".php", "login", "setup"]):
-                threat_level = "MEDIUM"
-            else:
+            else:                              # Weak/borderline anomaly
                 threat_level = "MEDIUM"
         else:
             threat_level = "LOW"
@@ -105,13 +114,11 @@ class UnifiedHoneypotEngine:
         mimic_level = self.actions[action_idx]["mimic_level"]
         ai_response = self.ai_mimic.generate_response(mimic_level)
         
-        # PHASE 5: PHYSICAL ALERT
-        # Trigger ESP32 alerts based on the ADAPTIVE RL ACTION (label)
-        # This makes the hardware "AI-Driven" instead of "Rule-Driven"
-
-        if label in ["BLOCK", "ISOLATE"]:
+        # Trigger ESP32 alerts based strictly on the Threat Level
+        # The hardware only has 3 states: CRITICAL (Red), MEDIUM (Yellow), NORMAL (Green)
+        if threat_level == "CRITICAL":
             self.hardware.send_alert("CRITICAL")  # Red LED + Alarm
-        elif label == "CHALLENGE":
+        elif threat_level in ["HIGH", "MEDIUM"]:
             self.hardware.send_alert("MEDIUM")    # Yellow LED + Beep
         else:
             self.hardware.send_alert("NORMAL")    # Green LED

@@ -77,22 +77,31 @@ def preprocess():
     print("Saving processed data...")
     np.save(os.path.join(OUTPUT_DIR, 'X_train_benign.npy'), X_train_scaled)
     
-    # TESTING SET: remaining 20% Benign + ALL Malicious 
-    test_benign = benign_df.drop(train_benign.index)
-    test_malicious = malicious_df # keeping all malicious for a robust test
+    # TESTING SET: Create a balanced set for the Performance Audit
+    test_benign_all = benign_df.drop(train_benign.index)
+    
+    # NEW BALANCING LOGIC: We take a representative sample so the artifacts are clean
+    # Sample 100,000 from each or the maximum available
+    sample_size = min(len(test_benign_all), len(malicious_df), 100000)
+    
+    print(f"Sampling {sample_size} benign and {sample_size} malicious for test set...")
+    test_benign = test_benign_all.sample(n=sample_size, random_state=42)
+    test_malicious = malicious_df.sample(n=sample_size, random_state=42)
     
     test_df = pd.concat([test_benign, test_malicious])
     X_test = test_df[numeric_cols]
     y_test = test_df['label'].apply(lambda x: 1 if x == 'Benign' else -1).values
     
+    # Use the training scaler
     X_test_scaled = scaler_train.transform(X_test)
     
+    print("Saving processed artifacts...")
     np.save(os.path.join(OUTPUT_DIR, 'X_test.npy'), X_test_scaled)
     np.save(os.path.join(OUTPUT_DIR, 'y_test.npy'), y_test)
     
     print("Preprocessing complete!")
     print(f"Training set size (Benign only): {X_train_scaled.shape}")
-    print(f"Testing set size (Mixed): {X_test_scaled.shape}")
+    print(f"Testing set size (Balanced 50/50): {X_test_scaled.shape}")
 
 if __name__ == "__main__":
     preprocess()

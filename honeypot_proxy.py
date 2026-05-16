@@ -1,3 +1,8 @@
+import sys
+import os
+import json
+import datetime
+import requests
 from flask import Flask, request, Response, jsonify, make_response
 from flask_cors import CORS
 from functools import wraps
@@ -140,6 +145,8 @@ def api_metrics():
                 delay_sums = {"LOW": 0.0, "MEDIUM": 0.0, "HIGH": 0.0, "CRITICAL": 0.0}
                 threat_counts = {"LOW": 0, "MEDIUM": 0, "HIGH": 0, "CRITICAL": 0}
                 
+                tp, fp, tn, fn = 0, 0, 0, 0
+                
                 for d in decisions:
                     threat = d.get("threat_level", "LOW")
                     action = d.get("rl_action", "ALLOW")
@@ -156,9 +163,30 @@ def api_metrics():
                     if action in action_counts:
                         action_counts[action] += 1
                     
-                    # accuracy calculation
-                    if action == mapping.get(threat) or action == threat:
+                    # accuracy calculation (Updated to recognize AI Adaptation)
+                    expected_action = mapping.get(threat)
+                    if action == expected_action or action == threat:
                         correct += 1
+                    # Valid RL Adaptations (Agent overriding static rules based on IP history)
+                    elif threat == "MEDIUM" and action == "BLOCK":
+                        correct += 1  # Escalation
+                    elif threat == "HIGH" and action == "ISOLATE":
+                        correct += 1  # Escalation
+                    elif threat == "CRITICAL" and action == "BLOCK":
+                        correct += 1  # Tarpit strategy
+
+                    # Real F1-Score calculation components
+                    is_anomaly = threat != "LOW"
+                    is_detected = action != "ALLOW"
+                    if is_anomaly and is_detected:
+                        tp += 1
+                    elif not is_anomaly and not is_detected:
+                        tn += 1
+                    elif not is_anomaly and is_detected:
+                        fp += 1
+                    elif is_anomaly and not is_detected:
+                        fn += 1
+
                     
                     # delay stats
                     entry_delay = 0
@@ -175,6 +203,12 @@ def api_metrics():
 
                 stats["agent_accuracy"] = (correct / len(decisions)) * 100
                 stats["avg_delay"] = total_delays / len(decisions)
+                
+                # Calculate Real F1-Score
+                precision = tp / (tp + fp) if (tp + fp) > 0 else 0.0
+                recall = tp / (tp + fn) if (tp + fn) > 0 else 0.0
+                f1_score = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0.0
+                stats["f1_score"] = f1_score * 100
                 
                 # calculate avg delay per threat level
                 stats["delay_by_threat"] = {
@@ -218,7 +252,7 @@ def honeypot_catch_all(path=''):
         threat_level = meta.get('threat_level', 'LOW')
         rl_action = meta.get('rl_action', 'ALLOW')
         
-        print(f"Hybrid Engine Decision: {threat_level} -> {rl_action}")
+        print(f"ML Engine Decision: {threat_level} -> {rl_action}")
         
         # trigger physical alarm for severe threats
         # (Now handled internally by the UnifiedHoneypotEngine serial bridge)

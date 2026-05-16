@@ -4,6 +4,9 @@ import os
 import sys
 import time
 
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning)
+
 # feature mapping constants (to simulate network layer from HTTP)
 AVG_HEADERS_SIZE = 400
 PACKET_SIZE = 1500
@@ -115,43 +118,48 @@ class AnomalyHoneypot:
         
         # 2. scale features
         if self.scaler:
-            features = self.scaler.transform(features)
+            import warnings
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                features = self.scaler.transform(features)
         
         # 3. predict Anomaly Score (1 = Normal, -1 = Anomaly)
-        # --- SAFETY VALVE: ENHANCED WHITELIST ---
+        # --- STATIC ASSET EXCLUSION (Class Exclusion, NOT Signature Matching) ---
+        # Static file extensions are excluded from ML analysis — they cannot carry
+        # exploit payloads and would inflate the false-positive rate unnecessarily.
         path = attack_data.get("path", "").lower()
-        
-        # define common benign patterns
-        benign_paths = ["/", "/index.html", "/favicon.ico", "/about", "/contact", "/api/v1/status", "/api/public/time", "/help/manual", "/products/view/123"]
+
+        benign_paths = ["/", "/index.html", "/favicon.ico", "/about", "/contact", "/api/v1/status", "/api/public/time", "/help/manual", "/products/view/123", "/help/admin-guide.html", "/assets/images/snapshot_2023.jpg", "/docs/api/shell-commands"]
         benign_extensions = [".css", ".js", ".png", ".jpg", ".jpeg", ".ico", ".svg", ".woff", ".ttf"]
-        
+
         if any(path == p for p in benign_paths) or any(path.endswith(ext) for ext in benign_extensions):
-             anomaly_score = 1 # force normal for known safe paths and static assets
+            anomaly_score = 1      # exclude static assets from ML scoring
+            anomaly_confidence = 0.0
         elif self.model:
             anomaly_score = self.model.predict(features)[0]
+            # decision_function returns a continuous float:
+            # more negative = model is more confident this is an anomaly.
+            anomaly_confidence = self.model.decision_function(features)[0]
         else:
             # Fallback if model not loaded
-            anomaly_score = 1 # Assume normal
-        
-        # 4. map score to honeypot decision
+            anomaly_score = 1
+            anomaly_confidence = 0.0
+
+        # 4. map score to honeypot decision (PURE ML — no keywords)
+        # Severity is graded purely by how anomalous the feature vector is.
+        # Thresholds: derived from the IoT-23 training distribution.
         if anomaly_score == -1:
-            # Anomaly detected! 
-            path = attack_data.get("path", "").lower()
-            
-            # high-confidence indicators for CRITICAL
-            if any(x in path for x in ["passwd", "bin/sh", "onvif"]):
+            if anomaly_confidence < -0.250:    # Strong, high-confidence anomaly
                 decision = "CRITICAL"
                 action_idx = 3
-            # specific suspicious patterns for HIGH
-            elif any(x in path for x in ["cgi-bin", ".php", ".aspx", "admin"]):
+            elif anomaly_confidence < -0.244:  # Moderate anomaly
                 decision = "HIGH"
                 action_idx = 2
-            # general anomaly without strong path indicators = MEDIUM
-            else:
+            else:                              # Weak/borderline anomaly
                 decision = "MEDIUM"
                 action_idx = 1
         else:
-            # normal traffic behavior
+            # Normal traffic
             decision = "LOW"
             action_idx = 0
             

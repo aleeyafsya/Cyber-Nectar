@@ -59,8 +59,8 @@ def run_audit():
         return
 
     for i in range(1, TOTAL_REQUESTS + 1):
-        # 50/50 split for balanced testing
-        is_attack = random.choice([True, False])
+        # 40% attacks, 60% benign (more realistic)
+        is_attack = random.random() < 0.4
         
         path = random.choice(ATTACK_PATHS) if is_attack else random.choice(BENIGN_PATHS)
         actual_label = 1 if is_attack else 0  # 1 = Attack, 0 = Benign
@@ -104,6 +104,10 @@ def run_audit():
     fn = sum(1 for yt, yp in zip(y_true, y_pred) if yt == 1 and yp == 0)
 
     accuracy = (tp + tn) / TOTAL_REQUESTS
+    
+    # TPR and FPR
+    tpr = tp / (tp + fn) if (tp + fn) > 0 else 0 # True Positive Rate (Recall)
+    fpr = fp / (fp + tn) if (fp + tn) > 0 else 0 # False Positive Rate (False Alarms)
 
     print(f"\n[ RAW CONFUSION MATRIX ]")
     print(f"  True Positives (Caught Attacks)    : {tp}")
@@ -112,10 +116,11 @@ def run_audit():
     print(f"  False Negatives (Missed Attacks)   : {fn}")
 
     print(f"\n[ KEY PERFORMANCE INDICATORS ]")
-    print(f"  OVERALL ACCURACY : {accuracy * 100:.2f}%")
-    print(f"  PRECISION        : {precision * 100:.2f}% ")
-    print(f"  RECALL           : {recall * 100:.2f}% ")
-    print(f"  F1-SCORE         : {f1 * 100:.2f}% ")
+    print(f"  OVERALL ACCURACY      : {accuracy * 100:.2f}%")
+    print(f"  PRECISION             : {precision * 100:.2f}% ")
+    print(f"  RECALL (TPR)          : {recall * 100:.2f}% ")
+    print(f"  FALSE POSITIVE RATE   : {fpr * 100:.2f}% ")
+    print(f"  F1-SCORE              : {f1 * 100:.2f}% ")
     
     print("\n" + "="*60)
     print("="*60)

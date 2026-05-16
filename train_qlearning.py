@@ -50,33 +50,33 @@ class QLearningTrainer:
             return -6
         
         rewards = {
-            # LOW threat (ex: normal dashboard access)
+            # LOW threat
             "LOW": {
-                "ALLOW": +20,     # heavily reward allowing normal traffic
-                "CHALLENGE": +2,  
-                "BLOCK": -10,     # penalise if blocks normal users
-                "ISOLATE": -25    # severely penalise if isolates normal users
+                "ALLOW": +20,     
+                "CHALLENGE": -5,  
+                "BLOCK": -15,     
+                "ISOLATE": -25    
             },
-            # MEDIUM threat (ex: scanning for /onvif, /cgi-bin)
+            # MEDIUM threat
             "MEDIUM": {
-                "ALLOW": -5,      
-                "CHALLENGE": +10, # preferred action for scanners
+                "ALLOW": -10,      
+                "CHALLENGE": +20, # strictly prefer challenge
                 "BLOCK": +5,      
-                "ISOLATE": -15    # isolate is way too aggressive for scanners
+                "ISOLATE": -10    
             },
-            # HIGH threat (ex: bruteforcing login or hunting for /snapshot.cgi)
+            # HIGH threat
             "HIGH": {
-                "ALLOW": -10,     # very bad to allow stream access or login bruteforce
-                "CHALLENGE": +5,  # good to tarpit the attacker with long Delays / Fake APIs
-                "BLOCK": +8,      # good to block repeated attempts
-                "ISOLATE": +10    # best to isolate high threats
+                "ALLOW": -20,     
+                "CHALLENGE": +0,  
+                "BLOCK": +20,     # strictly prefer block
+                "ISOLATE": +5    
             },
-            # CRITICAL threat (ex: Config disclosure paths like /current_config/passwd)
+            # CRITICAL threat 
             "CRITICAL": {
-                "ALLOW": -15,     # never allow config disclosure
-                "CHALLENGE": -5,  # too dangerous to just delay, must contain
-                "BLOCK": +10,     # must block critical exploits
-                "ISOLATE": +15    # isolate immediately to preserve honeypot safety
+                "ALLOW": -30,     
+                "CHALLENGE": -10,  
+                "BLOCK": +5,     
+                "ISOLATE": +20    # strictly prefer isolate
             }
         }
         
